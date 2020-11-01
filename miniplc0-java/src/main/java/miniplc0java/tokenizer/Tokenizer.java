@@ -63,14 +63,18 @@ public class Tokenizer {
             else
                 break;
         }
-        if(num<0X7FFFFFFF) {
+        if(num<=0x7fffffff) {
             int ans=(int)num;
             token.setValue(ans);
             token.setEndPos(it.currentPos());
             return token;
         }
-        else
-            throw new TokenizeError(ErrorCode.IntegerOverflow, it.currentPos());
+        else{
+            token.setValue(num);
+            token.setEndPos(it.currentPos());
+            return token;
+        }
+            //throw new TokenizeError(ErrorCode.IntegerOverflow, it.currentPos());
     }
 
     private Token lexIdentOrKeyword() throws TokenizeError {
