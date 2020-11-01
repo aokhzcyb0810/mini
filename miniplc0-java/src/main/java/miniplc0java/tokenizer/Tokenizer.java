@@ -58,6 +58,7 @@ public class Tokenizer {
             ch=it.peekChar();
             if(Character.isDigit(ch)){
                 num=num*10+it.peekChar()-'0';
+                it.nextChar();
             }
             else
                 break;
