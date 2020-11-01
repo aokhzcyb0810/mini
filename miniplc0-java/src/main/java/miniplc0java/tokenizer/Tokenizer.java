@@ -2,6 +2,8 @@ package miniplc0java.tokenizer;
 
 import miniplc0java.error.TokenizeError;
 import miniplc0java.error.ErrorCode;
+import miniplc0java.util.Pos;
+
 public class Tokenizer {
 
     private StringIter it;
@@ -48,7 +50,9 @@ public class Tokenizer {
         // Token 的 Value 应填写数字的值
         String str="";
         char ch;
-        int len,num=0,i=1;
+        int len;
+        long num=0,i=1;
+        Pos spos=it.currentPos();
         Token token=new Token(TokenType.Uint,num,it.currentPos(),it.currentPos());
         while(true){
             ch=it.peekChar();
@@ -62,12 +66,17 @@ public class Tokenizer {
         len=str.length();
         while(len>0){
             len--;
-            num+=((int)(str.charAt(len))-48)*i;
+            num+=((long)(str.charAt(len))-48)*i;
             i*=10;
         }
-        token.setValue(num);
-        token.setEndPos(it.currentPos());
-        return token;
+        if(num<0X7FFFFFF) {
+            int ans=(int)num;
+            token.setValue(ans);
+            token.setEndPos(it.currentPos());
+            return token;
+        }
+        else
+            throw new TokenizeError(ErrorCode.IntegerOverflow, spos);
     }
 
     private Token lexIdentOrKeyword() throws TokenizeError {
