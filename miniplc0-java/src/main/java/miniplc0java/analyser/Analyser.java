@@ -397,13 +397,11 @@ public final class Analyser {
         while (true) {
             // 预读可能是运算符的 token
             Token op = peek();
-
-            // 运算符
-            if(op.getTokenType() == TokenType.Mult || op.getTokenType() == TokenType.Div){
-                next();
-            }
-            else
+            if (op.getTokenType() != TokenType.Mult && op.getTokenType() != TokenType.Div) {
                 break;
+            }
+            // 运算符
+            next();
 
             // 因子
             analyseFactor();
