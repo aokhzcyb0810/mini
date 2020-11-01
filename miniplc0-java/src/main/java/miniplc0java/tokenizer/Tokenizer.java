@@ -52,10 +52,12 @@ public class Tokenizer {
         Token token=new Token(TokenType.Uint,num,it.currentPos(),it.currentPos());
         while(true){
             ch=it.peekChar();
-            if(!(ch>=48 && ch<=57)){
-                break;
+            if(Character.isDigit(ch)){
+                ch=it.nextChar();
+                str+=ch;
             }
-            str+=it.nextChar();
+            else
+                break;
         }
         len=str.length();
         while(len>0){
@@ -83,32 +85,34 @@ public class Tokenizer {
         Token token=new Token(TokenType.Uint,str,it.currentPos(),it.currentPos());
         while(true){
             ch=it.peekChar();
-            if(ch<48 || (ch>=58 && ch<=64) || (ch>=91 && ch<=96) || ch>=123){
-                break;
+            if(Character.isDigit(ch) || Character.isAlphabetic(ch)){
+                ch=it.nextChar();
+                str+=ch;
             }
-            str+=it.nextChar();
+            else
+                break;
         }
-        if(str.equals("Begin")){
+        if(str.equals("begin")){
             token.setTokenType(TokenType.Begin);
             token.setValue(TokenType.Begin.toString());
             token.setEndPos(it.currentPos());
         }
-        else if(str.equals("End")){
+        else if(str.equals("end")){
             token.setTokenType(TokenType.End);
             token.setValue(TokenType.End.toString());
             token.setEndPos(it.currentPos());
         }
-        else if(str.equals("Var")){
+        else if(str.equals("var")){
             token.setTokenType(TokenType.Var);
             token.setValue(TokenType.Var.toString());
             token.setEndPos(it.currentPos());
         }
-        else if(str.equals("Const")){
+        else if(str.equals("const")){
             token.setTokenType(TokenType.Const);
             token.setValue(TokenType.Const.toString());
             token.setEndPos(it.currentPos());
         }
-        else if(str.equals("Print")){
+        else if(str.equals("print")){
             token.setTokenType(TokenType.Print);
             token.setValue(TokenType.Print.toString());
             token.setEndPos(it.currentPos());
