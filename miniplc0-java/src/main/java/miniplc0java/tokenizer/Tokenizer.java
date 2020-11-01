@@ -63,6 +63,7 @@ public class Tokenizer {
             num+=((int)(str.charAt(len))-48)*i;
             i*=10;
         }
+        token.setValue(num);
         token.setEndPos(it.currentPos());
         return token;
     }
