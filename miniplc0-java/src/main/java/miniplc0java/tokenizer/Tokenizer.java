@@ -57,8 +57,8 @@ public class Tokenizer {
         while(true){
             ch=it.peekChar();
             if(Character.isDigit(ch)){
-                ch=it.nextChar();
                 str+=ch;
+                it.nextChar();
             }
             else
                 break;
@@ -95,8 +95,8 @@ public class Tokenizer {
         while(true){
             ch=it.peekChar();
             if(Character.isDigit(ch) || Character.isAlphabetic(ch)){
-                ch=it.nextChar();
                 str+=ch;
+                it.nextChar();
             }
             else
                 break;
