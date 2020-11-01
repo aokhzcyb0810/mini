@@ -48,35 +48,28 @@ public class Tokenizer {
         // 解析成功则返回无符号整数类型的token，否则返回编译错误
         //
         // Token 的 Value 应填写数字的值
-        String str="";
+        //String str="";
         char ch;
-        int len;
+        //int len;
         long num=0,i=1;
-        Pos spos=it.currentPos();
+       // Pos spos=it.currentPos();
         Token token=new Token(TokenType.Uint,num,it.currentPos(),it.currentPos());
         while(true){
             ch=it.peekChar();
             if(Character.isDigit(ch)){
-                str+=ch;
-                it.nextChar();
+                num=num*10+it.peekChar()-'0';
             }
             else
                 break;
         }
-        len=str.length();
-        while(len>0){
-            len--;
-            num+=((long)(str.charAt(len))-48)*i;
-            i*=10;
-        }
-        if(num<0X7FFFFFF) {
+        if(num<0X7FFFFFFF) {
             int ans=(int)num;
             token.setValue(ans);
             token.setEndPos(it.currentPos());
             return token;
         }
         else
-            throw new TokenizeError(ErrorCode.IntegerOverflow, spos);
+            throw new TokenizeError(ErrorCode.IntegerOverflow, it.currentPos());
     }
 
     private Token lexIdentOrKeyword() throws TokenizeError {
@@ -94,7 +87,7 @@ public class Tokenizer {
         Token token=new Token(TokenType.Uint,str,it.currentPos(),it.currentPos());
         while(true){
             ch=it.peekChar();
-            if(Character.isDigit(ch) || Character.isAlphabetic(ch)){
+            if(Character.isLetterOrDigit(it.peekChar())){
                 str+=ch;
                 it.nextChar();
             }
@@ -103,32 +96,32 @@ public class Tokenizer {
         }
         if(str.equals("begin")){
             token.setTokenType(TokenType.Begin);
-            token.setValue(TokenType.Begin.toString());
+            token.setValue(str);
             token.setEndPos(it.currentPos());
         }
         else if(str.equals("end")){
             token.setTokenType(TokenType.End);
-            token.setValue(TokenType.End.toString());
+            token.setValue(str);
             token.setEndPos(it.currentPos());
         }
         else if(str.equals("var")){
             token.setTokenType(TokenType.Var);
-            token.setValue(TokenType.Var.toString());
+            token.setValue(str);
             token.setEndPos(it.currentPos());
         }
         else if(str.equals("const")){
             token.setTokenType(TokenType.Const);
-            token.setValue(TokenType.Const.toString());
+            token.setValue(str);
             token.setEndPos(it.currentPos());
         }
         else if(str.equals("print")){
             token.setTokenType(TokenType.Print);
-            token.setValue(TokenType.Print.toString());
+            token.setValue(str);
             token.setEndPos(it.currentPos());
         }
         else{
             token.setTokenType(TokenType.Ident);
-            token.setValue(TokenType.Ident.toString());
+            token.setValue(str);
             token.setEndPos(it.currentPos());
         }
         return token;
