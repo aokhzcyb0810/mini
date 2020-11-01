@@ -75,7 +75,7 @@ public final class Analyser {
      * @throws TokenizeError
      */
     private boolean check(TokenType tt) throws TokenizeError {
-        Token token = peek();
+        var token = peek();
         return token.getTokenType() == tt;
     }
 
@@ -87,7 +87,7 @@ public final class Analyser {
      * @throws TokenizeError
      */
     private Token nextIf(TokenType tt) throws TokenizeError {
-        Token token = peek();
+        var token = peek();
         if (token.getTokenType() == tt) {
             return next();
         } else {
@@ -103,7 +103,7 @@ public final class Analyser {
      * @throws CompileError 如果类型不匹配
      */
     private Token expect(TokenType tt) throws CompileError {
-        Token token = peek();
+        var token = peek();
         if (token.getTokenType() == tt) {
             return next();
         } else {
@@ -347,22 +347,22 @@ public final class Analyser {
         // 赋值语句 -> 标识符 '=' 表达式 ';'
 
         // 分析这个语句
-
+        var nameToken = expect(TokenType.Ident);
         // 标识符是什么？
-        String name = null;
+        String name = nameToken.getValueString();
         var symbol = symbolTable.get(name);
         if (symbol == null) {
             // 没有这个标识符
-            throw new AnalyzeError(ErrorCode.NotDeclared, /* 当前位置 */ null);
+            throw new AnalyzeError(ErrorCode.NotDeclared, /* 当前位置 */ nameToken.getStartPos());
         } else if (symbol.isConstant) {
             // 标识符是常量
-            throw new AnalyzeError(ErrorCode.AssignToConstant, /* 当前位置 */ null);
+            throw new AnalyzeError(ErrorCode.AssignToConstant, /* 当前位置 */ nameToken.getStartPos());
         }
         // 设置符号已初始化
-        initializeSymbol(name, null);
+        initializeSymbol(name, nameToken.getStartPos());
 
         // 把结果保存
-        var offset = getOffset(name, null);
+        var offset = getOffset(name, nameToken.getStartPos());
         instructions.add(new Instruction(Operation.STO, offset));
     }
 
@@ -384,7 +384,7 @@ public final class Analyser {
         // 项 -> 因子 (乘法运算符 因子)*
 
         // 因子
-
+        analyseFactor();
         while (true) {
             // 预读可能是运算符的 token
             Token op = peek();
@@ -419,23 +419,23 @@ public final class Analyser {
 
         if (check(TokenType.Ident)) {
             // 是标识符
-
+            var nameToken = expect(TokenType.Ident);
             // 加载标识符的值
-            String name = /* 快填 */ null;
+            String name = /* 快填 */ nameToken.getValueString();
             var symbol = symbolTable.get(name);
             if (symbol == null) {
                 // 没有这个标识符
-                throw new AnalyzeError(ErrorCode.NotDeclared, /* 当前位置 */ null);
+                throw new AnalyzeError(ErrorCode.NotDeclared, /* 当前位置 */ nameToken.getStartPos());
             } else if (!symbol.isInitialized) {
                 // 标识符没初始化
-                throw new AnalyzeError(ErrorCode.NotInitialized, /* 当前位置 */ null);
+                throw new AnalyzeError(ErrorCode.NotInitialized, /* 当前位置 */ nameToken.getStartPos());
             }
-            var offset = getOffset(name, null);
+            var offset = getOffset(name, nameToken.getStartPos());
             instructions.add(new Instruction(Operation.LOD, offset));
         } else if (check(TokenType.Uint)) {
             // 是整数
             // 加载整数值
-            int value = 0;
+            int value = (int) next().getValue();
             instructions.add(new Instruction(Operation.LIT, value));
         } else if (check(TokenType.LParen)) {
             // 是表达式
